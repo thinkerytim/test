@@ -1,16 +1,10 @@
 <?php
 // BCS data scraper
+require_once('simplehtmldom/simple_html_dom.php');
 
-require '/home/tim/www/bcs/BCS/querypath/src/qp.php';
 $url 		= 'http://espn.go.com/college-football/';
 $bcsurl 	= 'bcs/_/';
 $otherurl 	= 'rankings/_/poll/';
-
-//rankings/_/poll/2/year/2011/week/10 -- week 10
-//rankings/_/poll/1/year/2011/week/1/seasontype/3 -- final
-
-//bcs/_/week/10/year/2012 -- week 10
-//bcs/_/year/2012 -- final
 
 $polls = array(
 			array('BCS', 0),
@@ -21,6 +15,15 @@ $polls = array(
 			
 $years = array(2008, 2009, 2010, 2011, 2012, 2013);
 $weeks = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,'final');
+
+function getTeamID($team){
+	return $team;
+}
+
+function getPrice($rank, $poll){
+	return true;
+}
+
 ?>
 <html>
 <body>
@@ -49,17 +52,33 @@ foreach ($polls as $poll) {
 					}
 				break;
 			}
-			if ($thisurl) echo '<a href="'.$thisurl.'">'.$thisurl.'</a><br />';
-			$doc = new DOMDocument('1.0');
-			@$doc->loadHTMLFile($url);
-			$html = qp($doc, NULL, array('ignore_parser_warnings' => TRUE));
-			
-			// BCS page is totally different than others
-			if ($poll[1] == 0){
-				// do BCS parsing
-			} else {
-				// do AP, Harris, Coaches
-				
+			if ($thisurl){
+				echo '<a href="'.$thisurl.'">'.$thisurl.'</a><br />';
+		
+				$html = file_get_html($thisurl);
+				foreach($html->find('tr.oddrow, tr.evenrow') as $row) {
+					// BCS page is totally different than others
+					if ($poll[1] == 0){
+						// do BCS parsing
+						$rank 		= $row->find('td',0)->plaintext;
+						$team 		= $row->find('td',1)->plaintext;
+					} else {
+						// do AP, Harris, Coaches
+						$rank 		= $row->find('td',0)->plaintext;
+						$team 		= $row->find('td',1)->find('li.school')->find('a')->plaintext;
+					}
+					$data = array(
+						':team' => getTeamId($team),
+						':rank' => $rank,
+						':poll' => $poll,
+						':week' => $week,
+						':price' => getPrice($rank, $poll)
+					);
+					
+					var_dump($data);
+					
+				}
+				die();
 			}
 		}
 	}	
