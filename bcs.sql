@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 05, 2013 at 08:36 PM
+-- Generation Time: Sep 06, 2013 at 03:44 PM
 -- Server version: 5.5.32
 -- PHP Version: 5.4.6-1ubuntu1.4
 
@@ -2839,6 +2839,9 @@ DROP TABLE IF EXISTS `trades`;
 CREATE TABLE IF NOT EXISTS `trades` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `team` tinyint(3) NOT NULL,
+  `poll` tinyint(4) NOT NULL,
+  `week` tinyint(4) NOT NULL,
+  `year` year(4) NOT NULL,
   `soldby` int(11) NOT NULL,
   `boughtby` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -2847,6 +2850,27 @@ CREATE TABLE IF NOT EXISTS `trades` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(125) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`) VALUES
+(1, 'Tim'),
+(2, 'Casey');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
