@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 05, 2013 at 02:39 PM
+-- Generation Time: Sep 05, 2013 at 08:36 PM
 -- Server version: 5.5.32
--- PHP Version: 5.4.6-1ubuntu1.3
+-- PHP Version: 5.4.6-1ubuntu1.4
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -2828,6 +2828,25 @@ INSERT INTO `teams` (`id`, `name`, `shortname`, `school`, `conference`) VALUES
 (123, 'West Virginia Mountaineers', 'West Virginia', 'West Virginia University', 'Big 12'),
 (124, 'Wisconsin Badgers', 'Wisconsin', 'University of Wisconsin Madison', 'Big Ten'),
 (125, 'Wyoming Cowboys', 'Wyoming', 'University of Wyoming', 'Mountain West');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trades`
+--
+
+DROP TABLE IF EXISTS `trades`;
+CREATE TABLE IF NOT EXISTS `trades` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team` tinyint(3) NOT NULL,
+  `soldby` int(11) NOT NULL,
+  `boughtby` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `unitprice` decimal(10,0) NOT NULL,
+  `totalcost` decimal(10,0) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

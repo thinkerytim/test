@@ -1,45 +1,16 @@
 <?php
-require_once('simplehtmldom/simple_html_dom.php');
 
-$poll = isset($_GET['poll']) ? $_GET['poll'] : 'bcs';
-$discount = (isset($_GET['discount']) ? $_GET['discount'] : 3) * .01; // convert to percentage
-$price = isset($_GET['price']) ? $_GET['price'] : 100; 
-
-$percent = 1;
+$poll = isset($_GET['poll']) ? $_GET['poll'] : 2;
+$year = isset($_GET['year']) ? $_GET['year'] : 2012;
+$week = isset($_GET['week']) ? $_GET['week'] : 1;
 
 $polls = array(
-	'bcs' 		=> 'BCS', 
-	'ap' 			=> 'AP', 
-	'coaches' => 'Coaches', 
-	'harris' 	=> 'Harris'
+	1 => 'BCS', 
+	2 => 'Harris'
+	3 => 'AP', 
+	4 => 'Coaches'	
 );
 
-$url 	= 'http://sportsillustrated.cnn.com/football/ncaa/polls/'.$poll.'/'; 
-
-$html = file_get_html($url);
-// initialize array to hold poll data
-$data = array();
-
-// read out rows into array
-foreach($html->find('tr.cnnRow2') as $row) {
-	$rank 		= $row->find('td',0)->plaintext;
-	$team 		= $row->find('td',1)->plaintext;
-	$record 	= $row->find('td',2)->plaintext;
-	$votes 		= $row->find('td',3)->plaintext;
-	$previous 	= $row->find('td',4)->plaintext;
-	$newprice	= '$'.round($price * $percent);
-	
-	// add this to the data array
-	$data[] = array($rank,$team,$record,$votes,$previous,$newprice);
-	
-	// increment percentage
-	$percent = $percent - $discount;
-}
-
-// Find all SPAN tags that have a class of "myClass"
-foreach($html->find('div.cnnPosted') as $e){
-	$modified = $e->innertext;
-}
 ?>
 
 <html>
@@ -65,12 +36,33 @@ foreach($html->find('div.cnnPosted') as $e){
 									}
 								?>
 							</select>
-							<label>Start Price</label>
-							<input type="text" name="price" placeholder="100.00" value="<?php echo $price; ?>" />
-							<div class="input-append">
-							  <input class="span2" id="dicount" name="discount" type="text" value="<?php echo $discount;?>" placeholder="3" />
-							  <span class="add-on">%</span>
-							</div>
+							<label>Year</label>
+							<select name="year">
+								<option value="2008" <?php if ($year == 2008) echo "selected=selected"; ?>>2008</option>
+								<option value="2009" <?php if ($year == 2009) echo "selected=selected"; ?>>2009</option>
+								<option value="2010" <?php if ($year == 2010) echo "selected=selected"; ?>>2010</option>
+								<option value="2011" <?php if ($year == 2011) echo "selected=selected"; ?>>2011</option>
+								<option value="2012" <?php if ($year == 2012) echo "selected=selected"; ?>>2012</option>
+								<option value="2013" <?php if ($year == 2013) echo "selected=selected"; ?>>2013</option>
+							</select>
+							<label>Week</label>
+							<select name="week">
+								<option value="1" <?php if ($year == 1) echo "selected=selected"; ?>>1</option>
+								<option value="2" <?php if ($year == 2) echo "selected=selected"; ?>>2</option>
+								<option value="3" <?php if ($year == 3) echo "selected=selected"; ?>>3</option>
+								<option value="4" <?php if ($year == 4) echo "selected=selected"; ?>>4</option>
+								<option value="5" <?php if ($year == 5) echo "selected=selected"; ?>>5</option>
+								<option value="6" <?php if ($year == 6) echo "selected=selected"; ?>>6</option>
+								<option value="7" <?php if ($year == 7) echo "selected=selected"; ?>>7</option>
+								<option value="8" <?php if ($year == 8) echo "selected=selected"; ?>>8</option>
+								<option value="9" <?php if ($year == 9) echo "selected=selected"; ?>>9</option>
+								<option value="10" <?php if ($year == 10) echo "selected=selected"; ?>>10</option>
+								<option value="11" <?php if ($year == 11) echo "selected=selected"; ?>>11</option>
+								<option value="12" <?php if ($year == 12) echo "selected=selected"; ?>>12</option>
+								<option value="13" <?php if ($year == 13) echo "selected=selected"; ?>>13</option>
+								<option value="14" <?php if ($year == 14) echo "selected=selected"; ?>>14</option>
+								<option value="15" <?php if ($year == 15) echo "selected=selected"; ?>>Final</option>
+							</select>
 					    <button type="submit" class="btn">Submit</button>
 					  </fieldset>
 				</form>
