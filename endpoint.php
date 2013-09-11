@@ -19,6 +19,7 @@ $soldby = isset($_GET['seller']) ? $_GET['seller'] : 1;
 $boughtby = isset($_GET['buyer']) ? $_GET['buyer'] : 1;
 $quantity = isset($_GET['quantity']) ? $_GET['quantity'] : 1;
 $unitprice = isset($_GET['priceper']) ? $_GET['priceper'] : 1;
+$id = isset($_GET['id']) ? $_GET['id'] : 0;
 
 switch ($task){
 	case 'getRanks':
