@@ -49,24 +49,6 @@ $polls = array(
 						});
 					}
 				});
-				// get contracts
-				$.ajax({
-					dataType: "json",
-					url: 'endpoint.php',
-					data: {
-						year: year,
-						week: week,
-						poll: poll,
-						task: 'getContracts'
-					},
-					success: function(data){
-						console.dir(data);
-						$.each(data, function(index, value){
-							var sharevalue = calculateValue(value['team']);
-							$('#contracts').append('<tr><td>'+value['boughtby']+'</td><td>'+value['name']+'</td><td>'+value['quantity']+'</td><td>$'+value['totalcost']+'</td><td>$'+sharevalue+'</td><td><span class="glyphicon glyphicon-trash"></span></td></tr>');
-						});
-					}
-				});
 				// get users
 				$.ajax({
 					dataType: "json",
@@ -87,17 +69,86 @@ $polls = array(
 					dataType: "json",
 					url: 'endpoint.php',
 					data: {
+						year: year,
+						week: week,
+						poll: poll,
 						task: 'getTeams'
 					},
 					success: function(data){
-						console.dir(data);
 						$.each(data, function(index, value){
-							var itemval= '<option value="'+index+'">'+value+'</option>';
-							$('#seller').append(itemval);
-							$('#buyer').append(itemval);
+							var itemval= '<option value="'+index+'">'+value['shortname']+' - '+value['rank']+'</option>';
+							$('#team').append(itemval);
 						});
 					}
 				});
+				
+				function deleteContract(id){
+					$.ajax({
+						dataType: "json",
+						url: 'endpoint.php',
+						data: {
+							task: 'deleteContract',
+							id: id
+						},
+						success: function(data){
+							$('#contract'+id).fadeOut('slow', function() { $(this).remove(); });
+						}
+					});
+				}
+				function getContracts(){
+					// get contracts
+					$.ajax({
+						dataType: "json",
+						url: 'endpoint.php',
+						data: {
+							year: year,
+							week: week,
+							poll: poll,
+							task: 'getContracts'
+						},
+						success: function(data){
+							$.each(data, function(index, value){
+								$('#contracts').append('<tr id="contract'+value['id']+'"><td>'+value['buyer']+'</td><td>'+value['name']+'</td><td>'+value['quantity']+'</td><td>$'+value['totalcost']+'</td><td>$'+value['price']+'</td><td>'+value['timestamp']+'</td><td><span id="'+value['id']+'" class="glyphicon glyphicon-trash"></span></td></tr>');
+							});
+						}
+					});
+				}
+				function addContract(){
+					var data = {
+						seller: $('#seller').val(),
+						buyer: $('#buyer').val(),
+						team: $('#team').val(),
+						quantity: $('#quantity').val(),
+						priceper: $('#priceper').val(),
+						year: year,
+						week: week,
+						poll: poll,
+						task: 'addContract'
+					}
+					$.ajax({
+						dataType: "json",
+						url: 'endpoint.php',
+						data: data,
+						success: function(data){
+							// first clear the contracts then repopulate
+							$("#contractsTable tr").remove();
+							getContracts();
+						}
+					});
+				}
+				
+				// initial call
+				getContracts();
+				
+				$('#addContract').click(function(){
+					addContract();
+				});
+				
+				$('tbody').on('click', '.glyphicon-trash', function(){
+					console.dir(this.id);
+					deleteContract(this.id);
+				});
+				
 			});
 		</script>
 	</head>
@@ -150,43 +201,48 @@ $polls = array(
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-8">
+			<div class="col-md-9">
 				<h3>Create new contract</h3>
 				<table class="table table-striped">
 					<thead>
+						<tr>
 						<td>Seller</td>
 						<td>Buyer</td>
 						<td>Team</td>
 						<td>Price Per Share</td>
 						<td>Quantity</td>
 						<td>Go</td>
+						</tr>
 					</thead>
 					<tbody>
+						<tr>
 						<td><select id="seller"></select></td>
 						<td><select id="buyer"></select></td>
 						<td><select id="team"></select></td>
 						<td><input type="text" id="priceper" /></td>
 						<td><input type="text" id="quantity" /></td>
-						<td><span class="glyphicon glyphicon-check"></td>
+						<td><span id="addContract" class="glyphicon glyphicon-check"></td>
+						</tr>
 					</tbody>
 				</table>
-			</div>
-			<div class="col-md-4 well well-sm">
 				<h3>Current Contracts</h3>
-				<table class="table table-striped">
+				<table id="contractsTable" class="table table-striped">
 					<thead>
 						<td>Owner</td>
 						<td>Team</td>
 						<td>Shares</td>
 						<td>Cost</td>
 						<td>Value</td>
-						<td><span class="glyphicon glyphicon-trash"></td>
+						<td>Purchased</td>
+						<td><span id="deleteContract" class="glyphicon glyphicon-trash"></td>
 					</thead>
 					<tfoot>
 					</tfoot>
 					<tbody id="contracts">
 					</tbody>
 				</table>
+			</div>
+			<div class="col-md-3 well well-sm">
 				<h3><?php echo $polls[$poll].' Poll - Week '.$week.', '.$year; ?></h3>
 				<table class="table table-striped">
 					<thead>

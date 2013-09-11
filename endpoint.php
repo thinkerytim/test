@@ -14,6 +14,11 @@ $poll = isset($_GET['poll']) ? $_GET['poll'] : 2;
 $year = isset($_GET['year']) ? $_GET['year'] : 2012;
 $week = isset($_GET['week']) ? $_GET['week'] : 1;
 $task = isset($_GET['task']) ? $_GET['task'] : 'getRanks';
+$team = isset($_GET['team']) ? $_GET['team'] : 1;
+$soldby = isset($_GET['seller']) ? $_GET['seller'] : 1;
+$boughtby = isset($_GET['buyer']) ? $_GET['buyer'] : 1;
+$quantity = isset($_GET['quantity']) ? $_GET['quantity'] : 1;
+$unitprice = isset($_GET['priceper']) ? $_GET['priceper'] : 1;
 
 switch ($task){
 	case 'getRanks':
@@ -26,10 +31,13 @@ switch ($task){
 		deleteContract($id);
 	break;
 	case 'addContract':
-		addContract($poll, $week, $year);
+		addContract($poll, $week, $year, $team, $soldby, $boughtby, $quantity, $unitprice);
 	break;
 	case 'getUsers':
 		getUsers();
+	break;
+	case 'getTeams':
+		getTeams($poll, $week, $year);
 	break;
 }
 
@@ -55,17 +63,45 @@ function getContracts($poll, $week, $year){
 	global $DBH;
 	// get teams
 	$contracts = array();
-	$query = 'SELECT a.*, b.shortname as name FROM trades a'
+	$query = 'SELECT a.*, b.shortname as name, c.name as buyer, d.name as seller FROM trades a'
 			.' JOIN teams b ON a.team = b.id'
-			.' JOIN users c ON a.user = c.id'
+			.' JOIN users c ON a.boughtby = c.id'
+			.' JOIN users d ON a.soldby = d.id'
 			.' WHERE a.week <= '.(int) $week.' AND a.poll = '.(int) $poll.' AND a.year = '.(int) $year.';';
 	
-	//$STH = $DBH->query($query);  
-	//$STH->setFetchMode(PDO::FETCH_ASSOC);  
+	$STH = $DBH->query($query);  
+	$STH->setFetchMode(PDO::FETCH_ASSOC);  
+	
+	while($row = $STH->fetch()) {  
+		$query = 'SELECT price FROM ranks a'
+			.' WHERE a.week = '.(int) $week.' AND a.poll = '.(int) $poll.' AND a.year = '.(int) $year
+			.' AND a.team = '.$row['team'];
+		
+		$handle = $DBH->query($query);  
+		$handle->setFetchMode(PDO::FETCH_ASSOC); 
+		$price = $handle->fetch();
+		
+		$row['price'] = $price['price'] * $row['quantity'];
+		
+		$contracts[$row['id']] = $row;
+	}
+	
+	echo json_encode($contracts); 	
+}
+
+function addContract($poll, $week, $year, $team, $soldby, $boughtby, $quantity, $unitprice){
+	global $DBH;
+	$totalcost = (int) $quantity * (int) $unitprice;
+	
+	$query = 'INSERT INTO trades (team, poll, week, year, soldby, boughtby, quantity, unitprice, totalcost)'
+			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $boughtby.','.(int) $quantity.','.(int) $unitprice.','.(int) $totalcost.');';
+error_log($query);	
+	$STH = $DBH->query($query);  
+	$STH->setFetchMode(PDO::FETCH_ASSOC);  
 	  
-	//while($row = $STH->fetch()) {  
-	//	$contracts[] = $row;
-	//}
+	while($row = $STH->fetch()) {  
+		$contracts[] = $row;
+	}
 	
 	echo json_encode($contracts); 	
 }
@@ -74,15 +110,16 @@ function getTeams($poll, $week, $year){
 	global $DBH;
 	// get teams
 	$teams = array();
-	$query = 'SELECT a.shortname, b.rank as rank FROM teams a'
+	$query = 'SELECT a.id, a.shortname, b.rank as rank FROM teams a'
 			.' JOIN ranks b ON a.id = b.team'
-			.' WHERE b.week = '.(int) $week.' AND b.poll = '.(int) $poll.' AND b.year = '.(int) $year.';';
-	
+			.' WHERE b.week = '.(int) $week.' AND b.poll = '.(int) $poll.' AND b.year = '.(int) $year
+			.' ORDER BY b.rank ASC';
+
 	$STH = $DBH->query($query);  
 	$STH->setFetchMode(PDO::FETCH_ASSOC);  
 	  
 	while($row = $STH->fetch()) {  
-		$teams[] = $row;
+		$teams[(string) $row['id']] = $row;
 	}
 	
 	echo json_encode($teams); 	
@@ -102,4 +139,14 @@ function getUsers(){
 	}
 	
 	echo json_encode($users); 	
+}
+
+function deleteContract($id){
+	global $DBH;
+	// get teams
+	$query = 'DELETE FROM trades WHERE id = '.(int) $id;
+	
+	$count = $DBH->exec($query);  
+	
+	echo $count ? json_encode(true) : json_encode(false); 	
 }
