@@ -44,12 +44,15 @@ $polls = array(
 $years = array(2008, 2009, 2010, 2011, 2012, 2013);
 $weeks = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,'final');
 
+$thisweek = 3;
+
 function getTeamID($team){
 	global $teams;
 	foreach ($teams as $id => $value){
 		if ($key = array_search($team, $value)) return $id;
 	}
 	echo "TEAM NOT FOUND: ".$team;
+	var_dump($team);
 	return false;
 }
 
@@ -85,7 +88,11 @@ foreach ($polls as $pkey => $poll) {
 					}
 				break;
 				default:
-					$thisurl = $url.$otherurl.$poll[1].'/year/'.$year.'/week/';
+					if ($year !== 2013){
+						$thisurl = $url.$otherurl.$poll[1].'/year/'.$year.'/week/';
+					} else {
+						$thisurl = $url.$otherurl.$poll[1].'/week/';
+					}
 					if ($week !== 'final') {
 						$thisurl .= $week;
 					} else { // final 
@@ -93,6 +100,8 @@ foreach ($polls as $pkey => $poll) {
 					}
 				break;
 			}
+			if ($year == 2013 && ( ($week > $thisweek) || ($week == 'final') ) ) $thisurl = false;
+
 			if ($thisurl){
 				var_dump($thisurl);
 				$html = file_get_html($thisurl);
@@ -127,7 +136,8 @@ foreach ($polls as $pkey => $poll) {
 						die();
 					}					
 				}
-			}
+			}			
+			
 		}
 	}	
 }
