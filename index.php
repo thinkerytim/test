@@ -58,7 +58,7 @@ $polls = array(
 					},
 					success: function(data){
 						$.each(data, function(index, value){
-							var itemval= '<option value="'+index+'">'+value+'</option>';
+							var itemval= '<option value="'+index+'">'+value[0]+'</option>';
 							$('#seller').append(itemval);
 							$('#buyer').append(itemval);
 						});
@@ -113,10 +113,52 @@ $polls = array(
 						}
 					});
 				}
-				function addContract(){
+				
+				function getOffers(){
+					// get contracts
+					$.ajax({
+						dataType: "json",
+						url: 'endpoint.php',
+						data: {
+							year: year,
+							week: week,
+							poll: poll,
+							task: 'getOffers'
+						},
+						success: function(data){
+							$.each(data, function(index, value){
+								$('#offers').append('<tr id="offers'+value['id']+'"><td>'+value['name']+'</td><td>'+value['quantity']+'</td><td>$'+value['totalcost']+'</td><td>$'+value['price']+'</td><td>'+value['timestamp']+'</td><td><span id="'+value['id']+'" class="glyphicon glyphicon-trash"></span></td></tr>');
+							});
+						}
+					});
+				}
+								
+				function addOffer(){
 					var data = {
 						seller: $('#seller').val(),
-						buyer: $('#buyer').val(),
+						team: $('#team').val(),
+						quantity: $('#quantity').val(),
+						priceper: $('#priceper').val(),
+						year: year,
+						week: week,
+						poll: poll,
+						task: 'addOffer'
+					}
+					$.ajax({
+						dataType: "json",
+						url: 'endpoint.php',
+						data: data,
+						success: function(data){
+							// first clear the contracts then repopulate
+							$("#offersTable.tbody tr").remove();
+							getOffers();
+						}
+					});
+				}
+				
+				function buyContract(){
+					var data = {
+						seller: $('#seller').val(),
 						team: $('#team').val(),
 						quantity: $('#quantity').val(),
 						priceper: $('#priceper').val(),
@@ -131,17 +173,17 @@ $polls = array(
 						data: data,
 						success: function(data){
 							// first clear the contracts then repopulate
-							$("#contractsTable tr").remove();
+							$("#ContractsTable.tbody tr").remove();
 							getContracts();
 						}
 					});
 				}
-				
 				// initial call
 				getContracts();
+				getOffers();
 				
-				$('#addContract').click(function(){
-					addContract();
+				$('#addOffer').click(function(){
+					addOffer();
 				});
 				
 				$('tbody').on('click', '.glyphicon-trash', function(){
@@ -202,12 +244,11 @@ $polls = array(
 		</div>
 		<div class="row">
 			<div class="col-md-9">
-				<h3>Create new contract</h3>
+				<h3>Create new offer</h3>
 				<table class="table table-striped">
 					<thead>
 						<tr>
 						<td>Seller</td>
-						<td>Buyer</td>
 						<td>Team</td>
 						<td>Price Per Share</td>
 						<td>Quantity</td>
@@ -217,12 +258,26 @@ $polls = array(
 					<tbody>
 						<tr>
 						<td><select id="seller"></select></td>
-						<td><select id="buyer"></select></td>
 						<td><select id="team"></select></td>
 						<td><input type="text" id="priceper" /></td>
 						<td><input type="text" id="quantity" /></td>
-						<td><span id="addContract" class="glyphicon glyphicon-check"></td>
+						<td><span id="addOffer" class="glyphicon glyphicon-check"></td>
 						</tr>
+					</tbody>
+				</table><h3>Current Offers</h3>
+				<table id="offersTable" class="table table-striped">
+					<thead>
+						<td>Seller</td>
+						<td>Team</td>
+						<td>Shares</td>
+						<td>Cost</td>
+						<td>Value</td>
+						<td><span id="purchase" class="glyphicon glyphicon-usd"></td>
+						<td><span id="purchase" class="glyphicon glyphicon-thumbs-down"></td>
+					</thead>
+					<tfoot>
+					</tfoot>
+					<tbody id="contracts">
 					</tbody>
 				</table>
 				<h3>Current Contracts</h3>

@@ -64,7 +64,7 @@ function getContracts($poll, $week, $year){
 	global $DBH;
 	// get teams
 	$contracts = array();
-	$query = 'SELECT a.*, b.shortname as name, c.name as buyer, d.name as seller FROM trades a'
+	$query = 'SELECT a.*, b.shortname as name, c.name as buyer, d.name as seller FROM contracts a'
 			.' JOIN teams b ON a.team = b.id'
 			.' JOIN users c ON a.boughtby = c.id'
 			.' JOIN users d ON a.soldby = d.id'
@@ -90,19 +90,40 @@ function getContracts($poll, $week, $year){
 	echo json_encode($contracts); 	
 }
 
-function addContract($poll, $week, $year, $team, $soldby, $boughtby, $quantity, $unitprice){
+function addOffer($poll, $week, $year, $team, $soldby, $quantity, $unitprice){
 	global $DBH;
 	$totalcost = (int) $quantity * (int) $unitprice;
 	
-	$query = 'INSERT INTO trades (team, poll, week, year, soldby, boughtby, quantity, unitprice, totalcost)'
-			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $boughtby.','.(int) $quantity.','.(int) $unitprice.','.(int) $totalcost.');';
-error_log($query);	
+	$query = 'INSERT INTO offers (team, poll, week, year, soldby, quantity, unitprice, totalcost)'
+			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $quantity.','.(int) $unitprice.','.(int) $totalcost.');';
+
 	$STH = $DBH->query($query);  
 	$STH->setFetchMode(PDO::FETCH_ASSOC);  
 	  
 	while($row = $STH->fetch()) {  
 		$contracts[] = $row;
 	}
+	
+	echo json_encode($contracts); 	
+}
+
+function addContract($poll, $week, $year, $team, $soldby, $boughtby, $quantity, $unitprice){
+	global $DBH;
+	$totalcost = (int) $quantity * (int) $unitprice;
+	
+	$query = 'INSERT INTO contracts (team, poll, week, year, soldby, boughtby, quantity, unitprice, totalcost)'
+			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $boughtby.','.(int) $quantity.','.(int) $unitprice.','.(int) $totalcost.');';
+	
+	$STH = $DBH->query($query);  
+	$STH->setFetchMode(PDO::FETCH_ASSOC);  
+	  
+	while($row = $STH->fetch()) {  
+		$contracts[] = $row;
+	}
+	
+	// now remove the mone from the account of the person
+	$query = 'UPDATE users SET balance = balance - '.$totalcost.' WHERE id = '.$boughtby;
+	$STH = $DBH->query($query); 
 	
 	echo json_encode($contracts); 	
 }
@@ -136,7 +157,7 @@ function getUsers(){
 	$STH->setFetchMode(PDO::FETCH_ASSOC);  
 	  
 	while($row = $STH->fetch()) {  
-		$users[$row['id']] = $row['name'];
+		$users[$row['id']] = array($row['name'], $row['balance'], $row['email']);
 	}
 	
 	echo json_encode($users); 	
@@ -145,7 +166,7 @@ function getUsers(){
 function deleteContract($id){
 	global $DBH;
 	// get teams
-	$query = 'DELETE FROM trades WHERE id = '.(int) $id;
+	$query = 'DELETE FROM contracts WHERE id = '.(int) $id;
 	
 	$count = $DBH->exec($query);  
 	
