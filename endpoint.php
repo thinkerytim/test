@@ -60,6 +60,25 @@ function getRanks($poll, $week, $year){
 	echo json_encode($ranks); 	
 }
 
+function getOffers($poll, $week, $year){
+	global $DBH;
+	// get teams
+	$offers = array();
+	$query = 'SELECT a.*, b.shortname as name, d.name as seller FROM contracts a'
+			.' JOIN teams b ON a.team = b.id'
+			.' JOIN users d ON a.soldby = d.id'
+			.' WHERE a.week <= '.(int) $week.' AND a.poll = '.(int) $poll.' AND a.year = '.(int) $year.';';
+	
+	$STH = $DBH->query($query);  
+	$STH->setFetchMode(PDO::FETCH_ASSOC);  
+	
+	while($row = $STH->fetch()) {  		
+		$offers[$row['id']] = $row;
+	}
+	
+	echo json_encode($offers); 	
+}
+
 function getContracts($poll, $week, $year){
 	global $DBH;
 	// get teams
@@ -90,12 +109,11 @@ function getContracts($poll, $week, $year){
 	echo json_encode($contracts); 	
 }
 
-function addOffer($poll, $week, $year, $team, $soldby, $quantity, $unitprice){
+function addOffer($poll, $week, $year, $team, $soldby, $unitprice){
 	global $DBH;
-	$totalcost = (int) $quantity * (int) $unitprice;
 	
-	$query = 'INSERT INTO offers (team, poll, week, year, soldby, quantity, unitprice, totalcost)'
-			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $quantity.','.(int) $unitprice.','.(int) $totalcost.');';
+	$query = 'INSERT INTO offers (team, poll, week, year, soldby, unitprice)'
+			.' VALUES ('.(int) $team.', '.(int) $poll.','.(int) $week.','.(int) $year.','.(int) $soldby.','.(int) $unitprice.');';
 
 	$STH = $DBH->query($query);  
 	$STH->setFetchMode(PDO::FETCH_ASSOC);  
