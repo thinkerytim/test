@@ -44,7 +44,7 @@ $polls = array(
 $years = array(2008, 2009, 2010, 2011, 2012, 2013);
 $weeks = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,'final');
 
-$thisweek = 3;
+$thisweek = 7;
 
 function getTeamID($team){
 	global $teams;

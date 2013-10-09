@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Sep 11, 2013 at 07:12 PM
+-- Generation Time: Oct 08, 2013 at 07:42 PM
 -- Server version: 5.5.32
 -- PHP Version: 5.4.6-1ubuntu1.4
 
@@ -19,6 +19,49 @@ SET time_zone = "+00:00";
 --
 -- Database: `bcs`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contracts`
+--
+
+DROP TABLE IF EXISTS `contracts`;
+CREATE TABLE IF NOT EXISTS `contracts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team` tinyint(3) NOT NULL,
+  `poll` tinyint(4) NOT NULL,
+  `week` tinyint(4) NOT NULL,
+  `year` year(4) NOT NULL,
+  `soldby` int(11) NOT NULL,
+  `boughtby` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `unitprice` decimal(10,0) NOT NULL,
+  `totalcost` decimal(10,0) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `offers`
+--
+
+DROP TABLE IF EXISTS `offers`;
+CREATE TABLE IF NOT EXISTS `offers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `team` tinyint(3) NOT NULL,
+  `poll` tinyint(4) NOT NULL,
+  `week` tinyint(4) NOT NULL,
+  `year` year(4) NOT NULL,
+  `soldby` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `unitprice` decimal(10,0) NOT NULL,
+  `totalcost` decimal(10,0) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7207,28 +7250,6 @@ INSERT INTO `teams` (`id`, `name`, `shortname`, `school`, `conference`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `trades`
---
-
-DROP TABLE IF EXISTS `trades`;
-CREATE TABLE IF NOT EXISTS `trades` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `team` tinyint(3) NOT NULL,
-  `poll` tinyint(4) NOT NULL,
-  `week` tinyint(4) NOT NULL,
-  `year` year(4) NOT NULL,
-  `soldby` int(11) NOT NULL,
-  `boughtby` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `unitprice` decimal(10,0) NOT NULL,
-  `totalcost` decimal(10,0) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -7236,6 +7257,8 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(125) NOT NULL,
+  `balance` decimal(10,0) NOT NULL,
+  `email` varchar(75) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
@@ -7243,9 +7266,9 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`) VALUES
-(1, 'Tim'),
-(2, 'Casey');
+INSERT INTO `users` (`id`, `name`, `balance`, `email`) VALUES
+(1, 'Tim', 10000, 'tim@thethinkery.net'),
+(2, 'Casey', 10000, 'caseyjmaz@gmail.com');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -27,8 +27,16 @@ $polls = array(
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+		<script src="cookie/jquery.cookie.js"></script>
 		<script>
 			$(document).ready(function() {
+				// show the user modal
+				$('#userModal').modal('show');
+				$('#user_select').change(function(){
+					$.cookie('user', $('#user_select').val());
+					console.dir($.cookie('user'));
+				});
+				
 				var year = <?php echo $year; ?>;
 				var	week = <?php echo $week; ?>;
 				var poll = <?php echo $poll; ?>;
@@ -312,6 +320,26 @@ $polls = array(
 				</table>
 			</div>
 		</div>
-
+		<div class="modal fade" id="userModal">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Set your user</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Select user:</p>
+				<select id="user_select">
+					<option value="">Select</option>
+					<option value="2">Casey</option>
+					<option value="1">Tim</option>
+				</select>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			  </div>
+			</div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->		
 	</body>
 </html>

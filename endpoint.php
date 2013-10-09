@@ -172,3 +172,27 @@ function deleteContract($id){
 	
 	echo $count ? json_encode(true) : json_encode(false); 	
 }
+
+function doMail($recipient, $type = "new", $price = false){
+	switch ($recipient){
+		case 1: 
+			$to = 'tim@thethinkery.net';
+			break;
+		case 2: 
+			$to = 'caseyjmaz@gmail.com';
+			break;
+	}
+	
+	switch ($type){
+		case 'new':
+			$subject = 'New Offer';
+			$message = 'A new offer is available on the bcs page';
+			break;
+		case 'counter':
+			$subject = 'New Counter Offer';
+			$message = 'A counter offer has been made on the bcs page';
+			break;
+	}
+	mail ( $to, $subject, $message );
+}
+
