@@ -259,7 +259,6 @@ $polls = array(
 						<td>Seller</td>
 						<td>Team</td>
 						<td>Price Per Share</td>
-						<td>Quantity</td>
 						<td>Go</td>
 						</tr>
 					</thead>
@@ -268,7 +267,6 @@ $polls = array(
 						<td><select id="seller"></select></td>
 						<td><select id="team"></select></td>
 						<td><input type="text" id="priceper" /></td>
-						<td><input type="text" id="quantity" /></td>
 						<td><span id="addOffer" class="glyphicon glyphicon-check"></td>
 						</tr>
 					</tbody>
@@ -277,7 +275,6 @@ $polls = array(
 					<thead>
 						<td>Seller</td>
 						<td>Team</td>
-						<td>Shares</td>
 						<td>Cost</td>
 						<td>Value</td>
 						<td><span id="purchase" class="glyphicon glyphicon-usd"></td>
